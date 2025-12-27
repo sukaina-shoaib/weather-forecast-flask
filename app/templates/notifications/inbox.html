@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: #f4f6f9;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #1f2937;
+    }
+
+    .container {
+        max-width: 760px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    /* Top buttons */
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-read {
+        background: #e8f0ff;
+        color: #2563eb;
+    }
+
+    .btn-read:hover {
+        background: #dbe7ff;
+    }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .btn-delete:hover {
+        background: #fecaca;
+    }
+
+    /* Card styles */
+    .card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-left: 5px solid transparent;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .card.unread {
+        border-left-color: #3b82f6;
+        background: #f8fbff;
+    }
+
+    .card-time {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
+
+    .card-message {
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+
+    .mark-btn {
+        background: transparent;
+        border: 1px solid #3b82f6;
+        color: #3b82f6;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .mark-btn:hover {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    .empty {
+        text-align: center;
+        color: #6b7280;
+        padding: 50px 0;
+        font-size: 15px;
+    }
+</style>
+
+<div class="container">
+    <h2>Notifications</h2>
+
+    <div class="actions">
+        <form action="{{ url_for('notifications.mark_all_read') }}" method="post">
+            <button class="btn btn-read">Mark all read</button>
+        </form>
+
+        <form action="{{ url_for('notifications.delete_all') }}" method="post"
+              onsubmit="return confirm('Delete all notifications?')">
+            <button class="btn btn-delete">Delete all</button>
+        </form>
+    </div>
+
+    {% if notifications %}
+        {% for n in notifications %}
+            <div class="card {% if not n.is_read %}unread{% endif %}">
+                <div class="card-time">{{ n.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="card-message">{{ n.message }}</div>
+
+                {% if not n.is_read %}
+                    <form action="{{ url_for('notifications.mark_read', nid=n.id) }}" method="post">
+                        <button class="mark-btn">Mark as read</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty">No notifications available.</div>
+    {% endif %}
+</div>
+{% endblock %}

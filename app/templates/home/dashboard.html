@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+/* ===== Global Dashboard Styles ===== */
+.dashboard {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 10px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937;
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+    margin-inline: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #111827;
+}
+
+/* Lists */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background: #f9fafb;
+}
+
+.list-item:last-child {
+  margin-bottom: 0;
+}
+
+/* City Links */
+.city-link {
+  text-decoration: none;
+  font-weight: 500;
+  color: #111827;
+}
+
+.city-link:hover {
+  color: #2563eb;
+}
+
+/*.country {*/
+/*  font-size: 12px;*/
+/*  color: #6b7280;*/
+/*  margin-left: 6px;*/
+/*}*/
+
+/* Remove Button */
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: #b91c1c;
+}
+
+/* Notifications */
+.notification {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.notification.unread {
+  background: #eef2ff;
+}
+
+.date {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.message {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* View All Link */
+.view-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.view-link:hover {
+  text-decoration: underline;
+}
+
+/* Empty Text */
+.empty-text {
+  font-size: 14px;
+  color: #6b7280;
+}
+</style>
+
+<div class="dashboard">
+  <h2 class="page-title">Dashboard</h2>
+
+  <div class="grid">
+
+    <!-- Favourite Cities -->
+    <div class="card">
+      <h3 class="card-title">★ Favourite Cities</h3>
+
+      {% if favourites %}
+        <ul class="list">
+          {% for f in favourites %}
+            <li class="list-item">
+              <a href="{{ url_for('weather.weather_result') }}?city={{ f.name }}" class="city-link">
+                {{ f.name }}
+              </a>
+
+              <form action="{{ url_for('favorites.remove', city_id=f.city_id) }}" method="post">
+                <button class="icon-btn" title="Remove">✖</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty-text">No favourite cities yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Notifications -->
+    <div class="card">
+      <h3 class="card-title">🔔 Latest Notifications</h3>
+
+      {% if notifications %}
+        <ul class="list">
+          {% for n in notifications[:5] %}
+            <li class="list-item notification {% if not n.is_read %}unread{% endif %}">
+              <div class="date">{{ n.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+              <div class="message">{{ n.message }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <a href="{{ url_for('notifications.inbox') }}" class="view-link">
+          View all notifications →
+        </a>
+      {% else %}
+        <p class="empty-text">No alerts yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

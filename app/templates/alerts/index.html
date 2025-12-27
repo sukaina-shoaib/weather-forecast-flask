@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}My Alerts{% endblock %}
+
+{% block content %}
+<style>
+.alerts-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.btn-outline-danger {
+    background: transparent;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-outline-danger:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.alerts-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.alerts-table thead {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.alerts-table th {
+    text-align: left;
+    padding: 20px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.alerts-table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 15px;
+}
+
+.alerts-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.alerts-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.alerts-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.empty-state a {
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.empty-state a:hover {
+    color: #3a0ca3;
+    text-decoration: underline;
+}
+
+.action-cell {
+    text-align: right;
+    width: 100px;
+}
+
+.city-name {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.alert-type {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #e0f2fe;
+    color: #0369a1;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.threshold-value {
+    font-family: 'SF Mono', 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.mb-3 {
+    margin-bottom: 24px;
+}
+
+.d-inline {
+    display: inline;
+}
+
+form {
+    margin: 0;
+}
+</style>
+
+<div class="alerts-container">
+    <div class="alerts-header">
+        <h2>My Alerts</h2>
+        <a class="btn-primary" href="/alerts/create">+ New Alert</a>
+    </div>
+
+    {% if alerts %}
+    <table class="alerts-table">
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Type</th>
+                <th>Threshold</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in alerts %}
+            <tr>
+                <td class="city-name">{{ a.city_name }}</td>
+                <td><span class="alert-type">
+                    {% if a.alert_type == 'temperature_ge' %}Temp ≥ °C
+                    {% elif a.alert_type == 'temperature_le' %}Temp ≤ °C
+                    {% elif a.alert_type == 'wind_ge' %}Wind ≥ m/s
+                    {% elif a.alert_type == 'wind_le' %}Wind ≤ m/s
+                    {% elif a.alert_type == 'weather_contains' %}Condition
+                    {% else %}{{ a.alert_type }}{% endif %}
+                </span></td>
+              <td class="threshold-value">
+  {% if a.alert_type|lower|trim == 'weather_contains' %}
+    {{ a.threshold_value|title }}
+  {% else %}
+    {{ a.threshold_value }}
+  {% endif %}
+</td>
+                <td class="action-cell">
+                    <form action="/alerts/delete/{{ a.id }}" method="post" class="d-inline">
+                        <button class="btn-outline-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>You have no alerts. <a href="/alerts/create">Create one</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
