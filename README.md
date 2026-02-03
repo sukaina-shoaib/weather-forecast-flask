@@ -3,7 +3,7 @@
 
 ## Live Website
 
-👉 **[https://sukaina.pythonanywhere.com/login](https://sukaina.pythonanywhere.com/login)**
+ **[https://sukaina.pythonanywhere.com/login](https://sukaina.pythonanywhere.com/login)**
 
 ---
 
@@ -40,7 +40,7 @@ This project solves the problem by offering:
 * Clean and responsive UI
 
 
-## ✨ Features
+## Features
 
 * User signup and login
 * City-based weather search
@@ -135,6 +135,6 @@ This project solves the problem by offering:
 ## Conclusion
 
 The **Weather Forecasting Website** successfully delivers a **simple, accurate, and personalized weather forecasting solution**.
-The live deployment proves its real-world usability and completes the Final Year Project requirements.
+
 
 
